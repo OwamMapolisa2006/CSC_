@@ -29,7 +29,112 @@ public class Practical14{
                     openTime,
                     chainedTime);
         }
-        
+
+    }static Pair[] generateData() {
+
+        Pair[] data = new Pair[N];
+        List<String> keys = new ArrayList<>();
+
+        for (int i = 1; i <= N; i++)
+            keys.add(String.valueOf(i));
+
+        Collections.shuffle(keys);
+
+        for (int i = 0; i < N; i++)
+            data[i] = new Pair(keys.get(i), String.valueOf(i + 1));
+
+        return data;
     }
 
- }
+
+    static double timeOpenHash(Pair[] data, int nEntries, int m) {
+
+        double totalTime = 0;
+
+        for (int r = 0; r < REPETITIONS; r++) {
+
+            OpenHash table = new OpenHash(m);
+
+            for (int i = 0; i < nEntries; i++)
+                table.insert(data[i].key, data[i].value);
+
+            long start = System.currentTimeMillis();
+
+            for (int i = 0; i < nEntries; i++)
+                table.lookup(data[i].key);
+
+            long end = System.currentTimeMillis();
+
+            totalTime += (end - start) / 1000.0;
+        }
+
+        return totalTime / REPETITIONS;
+    }
+
+    static double timeChainedHash(Pair[] data, int nEntries, int m) {
+
+        double totalTime = 0;
+
+        for (int r = 0; r < REPETITIONS; r++) {
+
+            ChainedHash table = new ChainedHash(m);
+
+            for (int i = 0; i < nEntries; i++)
+                table.insert(data[i].key, data[i].value);
+
+            long start = System.currentTimeMillis();
+
+            for (int i = 0; i < nEntries; i++)
+                table.lookup(data[i].key);
+
+            long end = System.currentTimeMillis();
+
+            totalTime += (end - start) / 1000.0;
+        }
+
+        return totalTime / REPETITIONS;
+    }static Pair[] generateData() {
+
+        Pair[] data = new Pair[N];
+        List<String> keys = new ArrayList<>();
+
+        for (int i = 1; i <= N; i++)
+            keys.add(String.valueOf(i));
+
+        Collections.shuffle(keys);
+
+        for (int i = 0; i < N; i++)
+            data[i] = new Pair(keys.get(i), String.valueOf(i + 1));
+
+        return data;
+    }
+
+    // -------------------------------
+    // Timing Open Hash
+    // -------------------------------
+
+    static double timeOpenHash(Pair[] data, int nEntries, int m) {
+
+        double totalTime = 0;
+
+        for (int r = 0; r < REPETITIONS; r++) {
+
+            OpenHash table = new OpenHash(m);
+
+            for (int i = 0; i < nEntries; i++)
+                table.insert(data[i].key, data[i].value);
+
+            long start = System.currentTimeMillis();
+
+            for (int i = 0; i < nEntries; i++)
+                table.lookup(data[i].key);
+
+            long end = System.currentTimeMillis();
+
+            totalTime += (end - start) / 1000.0;
+        }
+
+        return totalTime / REPETITIONS;
+    }
+
+   
