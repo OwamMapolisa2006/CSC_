@@ -1,21 +1,34 @@
-public class Anagrams{
-    public static void main(String[]args){
-       char[] char=word.toCharArray();
-       throws Exception{
-        if(args!=1){
-            System.out.println("Usage: java input file");
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
+public class Anagrams {
+
+    public static String signature(String word) {
+        char[] chars = word.toCharArray();
+        Arrays.sort(chars);
+        return new String(chars);
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        if (args.length != 1) {
+            System.out.println("Usage: java inputfile");
             return;
         }
+
         String inputfile = args[0];
         System.out.println("Data file: " + inputfile);
 
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(inputfile), "latin1"));
+
         Map<String, Integer> D = new HashMap<>();
 
         String line;
         int linenumber = 0;
-         while ((line = reader.readLine()) != null) {
+
+        while ((line = reader.readLine()) != null) {
 
             linenumber++;
 
@@ -28,12 +41,17 @@ public class Anagrams{
 
                 if (word.isEmpty()) continue;
 
-                D.put(word, D.getOrDefault(word, 0) + 1);
+                if (D.containsKey(word)) {
+                    D.put(word, D.get(word) + 1);
+                } else {
+                    D.put(word, 1);
+                }
             }
         }
 
         reader.close();
-         Map<String, List<String>> A = new HashMap<>();
+
+        Map<String, List<String>> A = new HashMap<>();
 
         for (String w : D.keySet()) {
 
@@ -71,6 +89,36 @@ public class Anagrams{
             }
         }
 
-       } 
+        out.close();
+
+        List<String> aa = Files.readAllLines(Paths.get("anagrams"));
+        Collections.sort(aa);
+
+        Files.createDirectories(Paths.get("latex"));
+
+        PrintWriter latex = new PrintWriter("latex/theAnagrams.tex");
+
+        char letter = 'X';
+
+        for (String lemma : aa) {
+
+            char initial = lemma.charAt(0);
+
+            if (Character.toLowerCase(initial) != Character.toLowerCase(letter)) {
+
+                letter = initial;
+
+                latex.println("\n\\vspace{14pt}");
+                latex.println("\\noindent\\textbf{\\Large " +
+                        Character.toUpperCase(initial) +
+                        "}\\\\*[+12pt]");
+            }
+
+            latex.print(lemma);
+        }
+
+        latex.close();
+
+        Files.deleteIfExists(Paths.get("anagrams"));
     }
 }
