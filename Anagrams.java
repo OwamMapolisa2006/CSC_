@@ -15,6 +15,24 @@ public class Anagrams{
 
         String line;
         int linenumber = 0;
+         while ((line = reader.readLine()) != null) {
+
+            linenumber++;
+
+            String[] words = line.split("\\s+");
+
+            for (String w : words) {
+
+                String W = w.replaceAll("[0123456789(,.;:_!?\\-\\[\\].)]", "");
+                String word = W;
+
+                if (word.isEmpty()) continue;
+
+                D.put(word, D.getOrDefault(word, 0) + 1);
+            }
+        }
+
+        reader.close();
        } 
     }
 }
