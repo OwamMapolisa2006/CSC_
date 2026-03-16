@@ -9,7 +9,7 @@ public class tryHeapsort {
         String[] words;
 
         if (args.length == 0) {
-            
+            System.out.println("No args: running 20-word sample test.");
             words = new String[]{
                     "listen", "silent", "enlist", "inlets", "stone",
                     "tones", "notes", "apple", "pale", "leap",
@@ -33,26 +33,92 @@ public class tryHeapsort {
             words = args;
         }
 
-        System.out.println("Before heapsort:");
-        System.out.println(Arrays.toString(words));
+        System.out.println("Input word count: " + words.length);
+        System.out.println("Input sample: " + Arrays.toString(Arrays.copyOf(words, Math.min(words.length, 20))));
 
-        heapSort(words);
-
-        System.out.println("After heapsort (lexicographic):");
-        System.out.println(Arrays.toString(words));
+        runAndReport("Bottom-up build", words, true);
+        runAndReport("Top-down build", words, false);
     }
 
-    private static void heapSort(String[] arr) {
-        int n = arr.length;
-        // bottom-up heap construction
-        for (int i = n / 2 - 1; i >= 0; i--) {
-            heapify(arr, n, i);
-        }
+    private static void runAndReport(String runName, String[] source, boolean bottomUp) {
+        String[] arr = Arrays.copyOf(source, source.length);
 
-        // sort by extracting max
+        long t0 = System.nanoTime();
+        if (bottomUp) {
+            buildHeapBottomUp(arr);
+        } else {
+            arr = buildHeapTopDown(source);
+        }
+        long t1 = System.nanoTime();
+
+        String[] sorted = Arrays.copyOf(arr, arr.length);
+        long t2 = System.nanoTime();
+        heapSortInPlace(sorted);
+        long t3 = System.nanoTime();
+        System.out.println("\n=== " + runName + " ===");
+        System.out.printf("build time: %.3f ms\n", (t1 - t0) / 1_000_000.0);
+        System.out.printf("sort time: %.3f ms\n", (t3 - t2) / 1_000_000.0);
+        System.out.printf("total   : %.3f ms\n", (t3 - t0) / 1_000_000.0);
+
+        System.out.println("heap sample (first 20): " + Arrays.toString(Arrays.copyOf(arr, Math.min(arr.length, 20))));
+        System.out.println("sorted sample (first 20): " + Arrays.toString(Arrays.copyOf(sorted, Math.min(sorted.length, 20))));
+
+        if (sorted.length <= 40) {
+            System.out.println("sorted full: " + Arrays.toString(sorted));
+        }
+    }
+
+    private static void buildHeapBottomUp(String[] arr) {
+        int n = arr.length;
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            siftDown(arr, i, n);
+        }
+    }
+
+    private static String[] buildHeapTopDown(String[] source) {
+        String[] heap = new String[source.length];
+        int size = 0;
+        for (String word : source) {
+            heap[size] = word;
+            siftUp(heap, size);
+            size++;
+        }
+        return heap;
+    }
+
+    private static void heapSortInPlace(String[] arr) {
+        int n = arr.length;
         for (int end = n - 1; end > 0; end--) {
             swap(arr, 0, end);
-            heapify(arr, end, 0);
+            siftDown(arr, 0, end);
+        }
+    }
+
+    private static void siftDown(String[] arr, int i, int length) {
+        int largest = i;
+        while (true) {
+            int left = 2 * i + 1;
+            int right = 2 * i + 2;
+
+            if (left < length && arr[left].compareTo(arr[largest]) > 0) {
+                largest = left;
+            }
+            if (right < length && arr[right].compareTo(arr[largest]) > 0) {
+                largest = right;
+            }
+
+            if (largest == i) break;
+            swap(arr, i, largest);
+            i = largest;
+        }
+    }
+
+    private static void siftUp(String[] heap, int i) {
+        while (i > 0) {
+            int parent = (i - 1) / 2;
+            if (heap[parent].compareTo(heap[i]) >= 0) break;
+            swap(heap, parent, i);
+            i = parent;
         }
     }
 
@@ -60,22 +126,5 @@ public class tryHeapsort {
         String temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
-    }
-
-    private static void heapify(String[] arr, int n, int i) {
-        int largest = i;
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
-
-        if (left < n && arr[left].compareTo(arr[largest]) > 0) {
-            largest = left;
-        }
-        if (right < n && arr[right].compareTo(arr[largest]) > 0) {
-            largest = right;
-        }
-        if (largest != i) {
-            swap(arr, i, largest);
-            heapify(arr, n, largest);
-        }
     }
 }
