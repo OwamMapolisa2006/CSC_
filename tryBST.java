@@ -97,4 +97,20 @@ public class tryBST {
 
         long[] populateTimes = new long[runs];
         long[] removeTimes = new long[runs];
+        for (int i = 0; i < runs; i++) {
+
+            BST tree = new BST();
+
+            long start = System.currentTimeMillis();
+
+            tree.buildBalanced(1, max);
+
+            long end = System.currentTimeMillis();
+            populateTimes[i] = end - start;
+
+            if (!tree.isBST()) {
+                System.out.println("Tree is NOT a BST!");
+                return;
+            }
+
  
