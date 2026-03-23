@@ -112,5 +112,25 @@ public class tryBST {
                 System.out.println("Tree is NOT a BST!");
                 return;
             }
+             start = System.currentTimeMillis();
+
+            tree.root = tree.removeEvens(tree.root);
+
+            end = System.currentTimeMillis();
+            removeTimes[i] = end - start;
+        }
+
+        double popAvg = Arrays.stream(populateTimes).average().orElse(0);
+        double remAvg = Arrays.stream(removeTimes).average().orElse(0);
+
+        double popStd = stdDev(populateTimes, popAvg);
+        double remStd = stdDev(removeTimes, remAvg);
+
+        System.out.println("\nMethod\t\t\t n\t Avg Time(ms)\t Std Dev");
+        System.out.println("------------------------------------------------------");
+        System.out.printf("Populate Tree\t\t %d\t %.2f\t\t %.2f\n", n, popAvg, popStd);
+        System.out.printf("Remove Evens\t\t %d\t %.2f\t\t %.2f\n", n, remAvg, remStd);
+    }
+}
 
  
